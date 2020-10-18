@@ -17,6 +17,7 @@ class HttpClient:
             'Verifier': verifier
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
+        r.raise_for_status()
         data = r.json()
 
         return data['Id']
@@ -32,6 +33,7 @@ class HttpClient:
             'Id': connection_id
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
+        r.raise_for_status()
         data = r.json()
 
         return data['Success']
@@ -50,6 +52,7 @@ class HttpClient:
             'SubmitUrl': url
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
+        r.raise_for_status()
         data = r.json()
 
         return data['Entries'], data['Nonce']
