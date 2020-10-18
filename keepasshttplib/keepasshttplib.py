@@ -1,4 +1,5 @@
 import base64
+from typing import Dict
 
 import keyring
 
@@ -57,17 +58,15 @@ class Keepasshttplib:
 
         return HttpClient.associate(base64_private_key, nonce, verifier)
 
-    def get_credentials_from_client(self, key, url, connection_id):
+    def get_credentials_from_client(self, key, url, connection_id) -> Dict[str, str]:
         """getting credentials from client"""
         enc = Encrypter(key)
         base64_private_key, nonce, verifier = enc.get_verifier()
         encrypted_url = enc.encrypt(url, base64.b64decode(nonce))
-        logins, nonce = HttpClient.get_logins(connection_id, nonce, verifier, encrypted_url)
-        if not logins:
-            return None
+        encrypted_credentials, nonce = HttpClient.get_logins(connection_id, nonce, verifier, encrypted_url)
+        iv = base64.b64decode(nonce)
 
-        encrypted_username = logins[0]['Login']
-        encrypted_password = logins[0]['Password']
-
-        return (enc.decrypt(encrypted_username, base64.b64decode(nonce)),
-                enc.decrypt(encrypted_password, base64.b64decode(nonce)))
+        return {
+            enc.decrypt(encrypted_credential['Login'], iv): enc.decrypt(encrypted_credential['Password'], iv)
+            for encrypted_credential in encrypted_credentials
+        }
