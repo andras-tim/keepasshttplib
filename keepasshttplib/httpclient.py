@@ -15,33 +15,36 @@ def associate(key, nonce, verifier):
         'Verifier': verifier
     }
     r = requests.post(URL, data=json.dumps(payload))
+
     return r.json()['Id']
 
 
-def test_associate(nonce, verifier, id):
+def test_associate(nonce, verifier, connection_id):
     """Test if client is Associated with KeepassHttp."""
     payload = {
         'Nonce': nonce,
         'Verifier': verifier,
         'RequestType': 'test-associate',
         'TriggerUnlock': 'false',
-        'Id': id
+        'Id': connection_id
     }
     r = requests.post(URL, data=json.dumps(payload))
+
     return r.json()['Success']
 
 
-def get_logins(id, nonce, verifier, url):
+def get_logins(connection_id, nonce, verifier, url):
     """getting logins through url"""
     payload = {
         'RequestType': 'get-logins',
         'SortSelection': 'true',
         'TriggerUnlock': 'false',
-        'Id': id,
+        'Id': connection_id,
         'Nonce': nonce,
         'Verifier': verifier,
         'Url': url,
         'SubmitUrl': url
     }
     r = requests.post(URL, data=json.dumps(payload))
-    return (r.json()['Entries'], r.json()['Nonce'])
+
+    return r.json()['Entries'], r.json()['Nonce']
