@@ -1,11 +1,13 @@
 import base64
+
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from pkcs7 import PKCS7Encoder
 
+
 class Encrypter():
     """Encrypting and decrypting strings using AES"""
-    
+
     def __init__(self, key):
         self.key = key
         self.encoder = PKCS7Encoder()
@@ -38,7 +40,7 @@ class Encrypter():
         decrypted = aes.decrypt(base64.b64decode(encrypted))
         return self.encoder.decode(decrypted.decode())
 
+
 def generate_key():
     """key generation"""
     return get_random_bytes(32)
-

@@ -1,11 +1,14 @@
+import base64
+
 import keyring
+
 from . import encrypter
 from . import httpclient
-import base64
+
 
 class Keepasshttplib():
     """Encrypting and decrypting strings using AES"""
-    
+
     def get_credentials(self, url):
         key = self.get_key_from_keyring()
         if key == None:
@@ -14,9 +17,9 @@ class Keepasshttplib():
         is_associated = False
         if id != None:
             is_associated = self.test_associate(key, id)
-        
+
         if is_associated == False:
-            print ('running test associate')
+            print('running test associate')
             id = self.associate(key)
             keyring.set_password("keepasshttplib", "id", id)
             keyring.set_password("keepasshttplib", "private_key", base64.b64encode(key).decode())
@@ -27,12 +30,10 @@ class Keepasshttplib():
         else:
             return None
 
-
-
     def get_key_from_keyring(self):
         """getting key from Keyring"""
         private_key = keyring.get_password("keepasshttplib", "private_key")
-            
+
         if private_key != None:
             return base64.b64decode(private_key)
         else:
@@ -66,5 +67,5 @@ class Keepasshttplib():
         encrypted_username = logins[0]['Login']
         encrypted_password = logins[0]['Password']
 
-        return (enc.decrypt(encrypted_username, base64.b64decode(nonce)), enc.decrypt(encrypted_password, base64.b64decode(nonce)))
-    
+        return (enc.decrypt(encrypted_username, base64.b64decode(nonce)),
+                enc.decrypt(encrypted_password, base64.b64decode(nonce)))
