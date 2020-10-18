@@ -6,6 +6,8 @@ import keyring
 from .encrypter import Encrypter
 from .httpclient import HttpClient
 
+Credential = Dict[str, str]
+
 
 class Keepasshttplib:
     """Encrypting and decrypting strings using AES"""
@@ -15,7 +17,7 @@ class Keepasshttplib:
         if keyring_id:
             self.keyring_service_name += "-{}".format(keyring_id)
 
-    def get_credentials(self, url):
+    def get_credentials(self, url: str) -> Optional[Credential]:
         key = self.get_key_from_keyring()
         if key is None:
             key = Encrypter.generate_key()
@@ -63,7 +65,7 @@ class Keepasshttplib:
 
         return HttpClient.associate(base64_private_key, nonce, verifier)
 
-    def get_credentials_from_client(self, key, url, connection_id) -> Dict[str, str]:
+    def get_credentials_from_client(self, key, url, connection_id) -> Credential:
         """getting credentials from client"""
         enc = Encrypter(key)
         base64_private_key, nonce, verifier = enc.get_verifier()

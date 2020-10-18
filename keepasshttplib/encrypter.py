@@ -30,6 +30,7 @@ class Encrypter:
             iv = get_random_bytes(16)
         aes = AES.new(self.key, AES.MODE_CBC, iv)
         padded_plain = self.encoder.encode(plain)
+
         return base64.b64encode(aes.encrypt(padded_plain.encode())).decode()
 
     def decrypt(self, encrypted, iv=None):
@@ -38,6 +39,7 @@ class Encrypter:
             iv = get_random_bytes(16)
         aes = AES.new(self.key, AES.MODE_CBC, iv)
         decrypted = aes.decrypt(base64.b64decode(encrypted))
+
         return self.encoder.decode(decrypted.decode())
 
     @classmethod
