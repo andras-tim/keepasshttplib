@@ -40,7 +40,7 @@ class Encrypter:
         decrypted = aes.decrypt(base64.b64decode(encrypted))
         return self.encoder.decode(decrypted.decode())
 
-
-def generate_key():
-    """key generation"""
-    return get_random_bytes(32)
+    @classmethod
+    def generate_key(cls):
+        """key generation"""
+        return get_random_bytes(32)

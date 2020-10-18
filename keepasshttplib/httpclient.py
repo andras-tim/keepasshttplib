@@ -3,48 +3,53 @@ import json
 
 import requests
 
-URL = 'http://localhost:19455'
 
+class HttpClient:
+    URL = 'http://localhost:19455'
 
-def associate(key, nonce, verifier):
-    """Associate a client with KeepassHttp."""
-    payload = {
-        'RequestType': 'associate',
-        'Key': key,
-        'Nonce': nonce,
-        'Verifier': verifier
-    }
-    r = requests.post(URL, data=json.dumps(payload))
+    @classmethod
+    def associate(cls, key, nonce, verifier):
+        """Associate a client with KeepassHttp."""
+        payload = {
+            'RequestType': 'associate',
+            'Key': key,
+            'Nonce': nonce,
+            'Verifier': verifier
+        }
+        r = requests.post(cls.URL, data=json.dumps(payload))
+        data = r.json()
 
-    return r.json()['Id']
+        return data['Id']
 
+    @classmethod
+    def test_associate(cls, nonce, verifier, connection_id):
+        """Test if client is Associated with KeepassHttp."""
+        payload = {
+            'Nonce': nonce,
+            'Verifier': verifier,
+            'RequestType': 'test-associate',
+            'TriggerUnlock': 'false',
+            'Id': connection_id
+        }
+        r = requests.post(cls.URL, data=json.dumps(payload))
+        data = r.json()
 
-def test_associate(nonce, verifier, connection_id):
-    """Test if client is Associated with KeepassHttp."""
-    payload = {
-        'Nonce': nonce,
-        'Verifier': verifier,
-        'RequestType': 'test-associate',
-        'TriggerUnlock': 'false',
-        'Id': connection_id
-    }
-    r = requests.post(URL, data=json.dumps(payload))
+        return data['Success']
 
-    return r.json()['Success']
+    @classmethod
+    def get_logins(cls, connection_id, nonce, verifier, url):
+        """getting logins through url"""
+        payload = {
+            'RequestType': 'get-logins',
+            'SortSelection': 'true',
+            'TriggerUnlock': 'false',
+            'Id': connection_id,
+            'Nonce': nonce,
+            'Verifier': verifier,
+            'Url': url,
+            'SubmitUrl': url
+        }
+        r = requests.post(cls.URL, data=json.dumps(payload))
+        data = r.json()
 
-
-def get_logins(connection_id, nonce, verifier, url):
-    """getting logins through url"""
-    payload = {
-        'RequestType': 'get-logins',
-        'SortSelection': 'true',
-        'TriggerUnlock': 'false',
-        'Id': connection_id,
-        'Nonce': nonce,
-        'Verifier': verifier,
-        'Url': url,
-        'SubmitUrl': url
-    }
-    r = requests.post(URL, data=json.dumps(payload))
-
-    return r.json()['Entries'], r.json()['Nonce']
+        return data['Entries'], data['Nonce']
