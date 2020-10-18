@@ -46,25 +46,24 @@ class Keepasshttplib:
     def test_associate(self, key, connection_id):
         """testing if associated"""
         enc = Encrypter(key)
-        (base64_private_key, nonce, verifier) = enc.get_verifier()
+        base64_private_key, nonce, verifier = enc.get_verifier()
 
         return HttpClient.test_associate(nonce, verifier, connection_id)
 
     def associate(self, key):
         """if associate"""
         enc = Encrypter(key)
-        (base64_private_key, nonce, verifier) = enc.get_verifier()
+        base64_private_key, nonce, verifier = enc.get_verifier()
 
         return HttpClient.associate(base64_private_key, nonce, verifier)
 
     def get_credentials_from_client(self, key, url, connection_id):
         """getting credentials from client"""
         enc = Encrypter(key)
-        (base64_private_key, nonce, verifier) = enc.get_verifier()
+        base64_private_key, nonce, verifier = enc.get_verifier()
         encrypted_url = enc.encrypt(url, base64.b64decode(nonce))
-        (logins, nonce) = HttpClient.get_logins(connection_id, nonce, verifier, encrypted_url)
-        number_of_logins = len(logins)
-        if number_of_logins == 0:
+        logins, nonce = HttpClient.get_logins(connection_id, nonce, verifier, encrypted_url)
+        if not logins:
             return None
 
         encrypted_username = logins[0]['Login']
