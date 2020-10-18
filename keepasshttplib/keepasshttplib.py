@@ -1,5 +1,5 @@
 import base64
-from typing import Dict
+from typing import Dict, Optional
 
 import keyring
 
@@ -9,6 +9,11 @@ from .httpclient import HttpClient
 
 class Keepasshttplib:
     """Encrypting and decrypting strings using AES"""
+
+    def __init__(self, keyring_id: Optional[str] = None):
+        self.keyring_service_name = "keepasshttplib"
+        if keyring_id:
+            self.keyring_service_name += "-{}".format(keyring_id)
 
     def get_credentials(self, url):
         key = self.get_key_from_keyring()
@@ -22,8 +27,8 @@ class Keepasshttplib:
         if not is_associated:
             print('running test associate')
             connection_id = self.associate(key)
-            keyring.set_password("keepasshttplib", "connection_id", connection_id)
-            keyring.set_password("keepasshttplib", "private_key", base64.b64encode(key).decode())
+            keyring.set_password(self.keyring_service_name, "connection_id", connection_id)
+            keyring.set_password(self.keyring_service_name, "private_key", base64.b64encode(key).decode())
             is_associated = True
 
         if is_associated:
@@ -33,7 +38,7 @@ class Keepasshttplib:
 
     def get_key_from_keyring(self):
         """getting key from Keyring"""
-        private_key = keyring.get_password("keepasshttplib", "private_key")
+        private_key = keyring.get_password(self.keyring_service_name, "private_key")
 
         if private_key is not None:
             return base64.b64decode(private_key)
@@ -42,7 +47,7 @@ class Keepasshttplib:
 
     def get_id_from_keyring(self):
         """getting identification from keyring"""
-        return keyring.get_password("keepasshttplib", "connection_id")
+        return keyring.get_password(self.keyring_service_name, "connection_id")
 
     def test_associate(self, key, connection_id):
         """testing if associated"""
