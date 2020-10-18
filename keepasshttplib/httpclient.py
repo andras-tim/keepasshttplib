@@ -2,6 +2,7 @@
 import json
 
 import requests
+from requests import HTTPError
 
 
 class HttpClient:
@@ -17,8 +18,12 @@ class HttpClient:
             'Verifier': verifier
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
-        r.raise_for_status()
         data = r.json()
+
+        error = data.get('Error')
+        if error:
+            raise HTTPError(error)
+        r.raise_for_status()
 
         return data['Id']
 
@@ -33,8 +38,12 @@ class HttpClient:
             'Id': connection_id
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
-        r.raise_for_status()
         data = r.json()
+
+        error = data.get('Error')
+        if error:
+            raise HTTPError(error)
+        r.raise_for_status()
 
         return data['Success']
 
@@ -52,7 +61,11 @@ class HttpClient:
             'SubmitUrl': url
         }
         r = requests.post(cls.URL, data=json.dumps(payload))
-        r.raise_for_status()
         data = r.json()
+
+        error = data.get('Error')
+        if error:
+            raise HTTPError(error)
+        r.raise_for_status()
 
         return data['Entries'], data['Nonce']
