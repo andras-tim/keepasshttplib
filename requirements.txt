@@ -1,4 +1,4 @@
 pycryptodome
-keyring
-pkcs7
-requests
+keyring~=20.0.1
+pkcs7~=0.1.2
+requests~=2.24.0
